@@ -7,13 +7,11 @@ use CodeIgniter\Model;
 class PustakawanModel extends Model
 {
     protected $table      = 'pustakawan';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_pustakawan';
 
     protected $allowedFields = [
-        'nama', 'username', 'password'
+        'nama', 'username', 'email', 'password'
     ];
 
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = '';
+    protected $useTimestamps = false;
 }

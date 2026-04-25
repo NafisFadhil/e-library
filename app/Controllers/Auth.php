@@ -26,7 +26,6 @@ class Auth extends BaseController
 
             $anggotaModel = new AnggotaModel();
             $user = $anggotaModel->where('email', $email)->first();
-
             if ($user && password_verify($password, $user['password'])) {
                 $this->setUserSession($user, 'anggota');
                 return redirect()->to('/dashboard/anggota');
@@ -36,7 +35,9 @@ class Auth extends BaseController
             $password = $this->request->getPost('password');
 
             $pustakawanModel = new PustakawanModel();
-            $user = $pustakawanModel->where('username', $username)->first();
+            $user = $pustakawanModel->where('username', $username)
+                                    ->orWhere('email', $username)
+                                    ->first();
 
             if ($user && password_verify($password, $user['password'])) {
                 $this->setUserSession($user, 'pustakawan');
@@ -50,8 +51,9 @@ class Auth extends BaseController
 
     private function setUserSession($user, $role)
     {
+        $id_field = ($role === 'anggota') ? 'id_anggota' : 'id_pustakawan';
         $data = [
-            'user_id'   => $user['id'],
+            'user_id'   => $user[$id_field],
             'nama'      => $user['nama'],
             'role'      => $role,
             'logged_in' => true,
@@ -72,9 +74,8 @@ class Auth extends BaseController
     {
         $rules = [
             'nama'             => 'required|min_length[3]',
-            'no_identitas'     => 'required|is_unique[anggota.no_identitas]',
+            'no_telepon'       => 'required|min_length[10]',
             'email'            => 'required|valid_email|is_unique[anggota.email]',
-            'no_wa'            => 'required|min_length[10]',
             'password'         => 'required|min_length[6]',
             'password_confirm' => 'required|matches[password]',
         ];
@@ -86,11 +87,11 @@ class Auth extends BaseController
 
         $anggotaModel = new AnggotaModel();
         $anggotaModel->insert([
-            'nama'         => $this->request->getPost('nama'),
-            'no_identitas' => $this->request->getPost('no_identitas'),
-            'email'        => $this->request->getPost('email'),
-            'no_wa'        => $this->request->getPost('no_wa'),
-            'password'     => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
+            'nama'       => $this->request->getPost('nama'),
+            'no_telepon' => $this->request->getPost('no_telepon'),
+            'email'      => $this->request->getPost('email'),
+            'password'   => password_hash($this->request->getPost('password'), PASSWORD_BCRYPT),
+            'status'     => 'aktif',
         ]);
 
         session()->setFlashdata('success', 'Pendaftaran berhasil! Silakan login.');

@@ -7,13 +7,11 @@ use CodeIgniter\Model;
 class AnggotaModel extends Model
 {
     protected $table      = 'anggota';
-    protected $primaryKey = 'id';
+    protected $primaryKey = 'id_anggota';
 
     protected $allowedFields = [
-        'nama', 'no_identitas', 'email', 'no_wa', 'password'
+        'nama', 'no_telepon', 'email', 'password', 'status'
     ];
 
-    protected $useTimestamps = true;
-    protected $createdField  = 'created_at';
-    protected $updatedField  = '';
+    protected $useTimestamps = false;
 }

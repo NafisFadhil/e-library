@@ -63,18 +63,12 @@
                     </div>
                   <?php endif; ?>
 
-                  <form action="<?= base_url('register/process') ?>" method="POST" class="row g-3 needs-validation" novalidate>
+                    <form action="<?= base_url('register/process') ?>" method="POST" class="row g-3 needs-validation" novalidate>
                     <?= csrf_field() ?>
                     <div class="col-12">
                       <label for="nama" class="form-label">Nama Lengkap</label>
                       <input type="text" name="nama" class="form-control" id="nama" value="<?= old('nama') ?>" required>
                       <div class="invalid-feedback">Silakan masukkan nama lengkap Anda.</div>
-                    </div>
-
-                    <div class="col-12">
-                      <label for="no_identitas" class="form-label">Nomor Identitas (NIM/NIK)</label>
-                      <input type="text" name="no_identitas" class="form-control" id="no_identitas" value="<?= old('no_identitas') ?>" required>
-                      <div class="invalid-feedback">Silakan masukkan nomor identitas Anda.</div>
                     </div>
 
                     <div class="col-12">
@@ -84,9 +78,9 @@
                     </div>
 
                     <div class="col-12">
-                      <label for="no_wa" class="form-label">Nomor WhatsApp</label>
-                      <input type="text" name="no_wa" class="form-control" id="no_wa" value="<?= old('no_wa') ?>" required>
-                      <div class="invalid-feedback">Silakan masukkan nomor WhatsApp Anda.</div>
+                      <label for="no_telepon" class="form-label">Nomor Telepon</label>
+                      <input type="text" name="no_telepon" class="form-control" id="no_telepon" value="<?= old('no_telepon') ?>" required>
+                      <div class="invalid-feedback">Silakan masukkan nomor telepon Anda.</div>
                     </div>
 
                     <div class="col-12">
