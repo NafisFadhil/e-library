@@ -182,22 +182,30 @@
               <hr class="dropdown-divider">
             </li>
 
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="#">
-                <i class="bi bi-person"></i>
-                <span>My Profile</span>
-              </a>
-            </li>
-            <li>
-              <hr class="dropdown-divider">
-            </li>
-
-            <li>
-              <a class="dropdown-item d-flex align-items-center" href="<?= base_url('logout') ?>">
-                <i class="bi bi-box-arrow-right"></i>
-                <span>Sign Out</span>
-              </a>
-            </li>
+            <?php if (session()->get('logged_in')): ?>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                  <i class="bi bi-person"></i>
+                  <span>My Profile</span>
+                </a>
+              </li>
+              <li>
+                <hr class="dropdown-divider">
+              </li>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="<?= base_url('logout') ?>">
+                  <i class="bi bi-box-arrow-right"></i>
+                  <span>Sign Out</span>
+                </a>
+              </li>
+            <?php else: ?>
+              <li>
+                <a class="dropdown-item d-flex align-items-center" href="<?= base_url('login') ?>">
+                  <i class="bi bi-box-arrow-in-right"></i>
+                  <span>Login</span>
+                </a>
+              </li>
+            <?php endif; ?>
 
           </ul><!-- End Profile Dropdown Items -->
         </li><!-- End Profile Nav -->

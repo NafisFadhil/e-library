@@ -10,9 +10,14 @@ class AuthAnggota implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        if (!session()->get('logged_in') || session()->get('role') !== 'anggota') {
-            session()->setFlashdata('error', 'Anda harus login sebagai anggota untuk mengakses halaman ini.');
+        if (!session()->get('logged_in')) {
+            session()->setFlashdata('error', 'Silakan login terlebih dahulu.');
             return redirect()->to('/login');
+        }
+
+        if (session()->get('role') !== 'anggota') {
+            session()->setFlashdata('error', 'Anda tidak memiliki akses ke halaman anggota.');
+            return redirect()->to('/');
         }
     }
 

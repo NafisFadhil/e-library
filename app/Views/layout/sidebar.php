@@ -4,7 +4,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="<?= base_url('dashboard/' . session()->get('role')) ?>">
+        <a class="nav-link " href="<?= session()->get('logged_in') ? base_url('dashboard/' . session()->get('role')) : base_url('/') ?>">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -54,10 +54,17 @@
       <li class="nav-heading">Akun</li>
 
       <li class="nav-item">
-        <a class="nav-link collapsed" href="<?= base_url('logout') ?>">
-          <i class="bi bi-box-arrow-right"></i>
-          <span>Logout</span>
-        </a>
+        <?php if (session()->get('logged_in')): ?>
+          <a class="nav-link collapsed" href="<?= base_url('logout') ?>">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>Logout</span>
+          </a>
+        <?php else: ?>
+          <a class="nav-link collapsed" href="<?= base_url('login') ?>">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>Login</span>
+          </a>
+        <?php endif; ?>
       </li>
 
     </ul>
