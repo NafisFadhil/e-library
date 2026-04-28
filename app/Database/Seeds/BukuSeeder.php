@@ -12,7 +12,7 @@ class BukuSeeder extends Seeder
         $faker = Factory::create('id_ID');
         $data = [];
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 60; $i++) {
             $data[] = [
                 'isbn'         => $faker->isbn13(),
                 'judul'        => $faker->sentence(3),

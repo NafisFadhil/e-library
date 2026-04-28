@@ -14,7 +14,7 @@ class PeminjamanSeeder extends Seeder
         $pustakawan = $this->db->table('pustakawan')->get()->getResult();
         $data = [];
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 40; $i++) {
             $tglPengajuan = $faker->dateTimeBetween('-1 month', 'now');
             $status = $faker->randomElement(['Diajukan', 'Dipinjam', 'Selesai', 'Ditolak']);
             

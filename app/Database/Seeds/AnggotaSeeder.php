@@ -12,7 +12,7 @@ class AnggotaSeeder extends Seeder
         $faker = Factory::create('id_ID');
         $data = [];
 
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $data[] = [
                 'nama'       => $faker->name(),
                 'no_telepon' => $faker->phoneNumber(),
