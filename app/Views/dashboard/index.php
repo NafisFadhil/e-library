@@ -1,3 +1,8 @@
+<?php 
+/** @var string $nama */ 
+/** @var int $total_anggota_aktif */
+/** @var int $total_koleksi_buku */
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -26,9 +31,16 @@
       </div>
       <span class="text-2xl font-bold tracking-tight text-slate-900">E-Lib<span class="text-indigo-600">rary</span></span>
     </div>
-    <div class="flex gap-4">
-      <a href="<?= base_url('login') ?>" class="px-6 py-2.5 font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Masuk</a>
-      <a href="<?= base_url('register') ?>" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">Daftar</a>
+    <div class="flex gap-4 items-center">
+      <?php if (session()->get('logged_in')): ?>
+        <span class="px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl font-semibold text-sm border border-emerald-200">
+          <i data-lucide="user-check" class="w-4 h-4 inline-block mr-1"></i>
+          <?= esc((string) session()->get('nama')) ?> — <?= ucfirst((string) session()->get('role')) ?>
+        </span>
+      <?php else: ?>
+        <a href="<?= base_url('login') ?>" class="px-6 py-2.5 font-semibold text-slate-600 hover:text-indigo-600 transition-colors">Masuk</a>
+        <a href="<?= base_url('register') ?>" class="px-6 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition-all">Daftar</a>
+      <?php endif; ?>
     </div>
   </nav>
 
@@ -53,22 +65,28 @@
         </p>
 
         <div class="flex flex-wrap gap-4 pt-4">
-          <a href="<?= base_url('login') ?>" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2">
-            Mulai Jelajahi <i data-lucide="arrow-right" class="w-5 h-5"></i>
-          </a>
-          <a href="#fitur" class="px-8 py-4 border-2 border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all">
+          <?php if (session()->get('logged_in')): ?>
+            <a href="<?= base_url('dashboard/' . session()->get('role')) ?>" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2">
+              Buka Dashboard <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </a>
+          <?php else: ?>
+            <a href="<?= base_url('login') ?>" class="px-8 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-200 flex items-center gap-2">
+              Mulai Jelajahi <i data-lucide="arrow-right" class="w-5 h-5"></i>
+            </a>
+          <?php endif; ?>
+          <a href="<?= base_url('fitur') ?>" class="px-8 py-4 border-2 border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all">
             Pelajari Fitur
           </a>
         </div>
 
         <div class="pt-8 border-t border-slate-100 flex gap-12">
           <div>
-            <p class="text-3xl font-black text-slate-900">5k+</p>
+            <p class="text-3xl font-black text-slate-900"><?= (int) $total_anggota_aktif ?></p>
             <p class="text-slate-400 font-medium">Member Aktif</p>
           </div>
           <div>
-            <p class="text-3xl font-black text-slate-900">200+</p>
-            <p class="text-slate-400 font-medium">Instansi Mitra</p>
+            <p class="text-3xl font-black text-slate-900"><?= (int) $total_koleksi_buku ?></p>
+            <p class="text-slate-400 font-medium">Koleksi Buku</p>
           </div>
         </div>
       </div>
