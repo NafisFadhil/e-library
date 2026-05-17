@@ -4,7 +4,7 @@
     <ul class="sidebar-nav" id="sidebar-nav">
 
       <li class="nav-item">
-        <a class="nav-link " href="<?= session()->get('logged_in') ? base_url('dashboard/' . session()->get('role')) : base_url('/') ?>">
+        <a class="nav-link <?= url_is('dashboard/pustakawan') || url_is('dashboard/anggota') ? '' : 'collapsed' ?>" href="<?= session()->get('logged_in') ? base_url('dashboard/' . session()->get('role')) : base_url('/') ?>">
           <i class="bi bi-grid"></i>
           <span>Dashboard</span>
         </a>
@@ -14,7 +14,7 @@
         <li class="nav-heading">Manajemen</li>
 
         <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link <?= url_is('dashboard/buku*') || url_is('dashboard/eksemplar*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/buku') ?>">
             <i class="bi bi-book"></i>
             <span>Data Buku</span>
           </a>
