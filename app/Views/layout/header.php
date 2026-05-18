@@ -10,10 +10,12 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      <?php if (session()->get('role') === 'pustakawan'): ?>
+      <form class="search-form d-flex align-items-center" method="GET" action="<?= base_url('dashboard/search') ?>">
+        <input type="text" name="keyword" placeholder="Cari Buku, Anggota, Peminjaman..." title="Masukkan kata kunci pencarian" value="<?= esc($keyword ?? '') ?>">
+        <button type="submit" title="Cari"><i class="bi bi-search"></i></button>
       </form>
+      <?php endif; ?>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">

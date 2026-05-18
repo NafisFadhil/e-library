@@ -27,6 +27,7 @@ $routes->group('dashboard', ['filter' => 'auth_anggota'], function ($routes) {
 
 $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) {
     $routes->get('pustakawan', 'Dashboard::pustakawan');
+    $routes->get('search', 'Dashboard::search');
 
     // CRUD Buku
     $routes->get('buku', 'Buku::index');
