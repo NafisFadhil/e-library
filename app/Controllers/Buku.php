@@ -18,9 +18,23 @@ class Buku extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $model = $this->bukuModel->getWithStockCount();
+
+        if (!empty($keyword)) {
+            $model->groupStart()
+                  ->like('buku.judul', $keyword)
+                  ->orLike('buku.isbn', $keyword)
+                  ->orLike('buku.penulis', $keyword)
+                  ->orLike('buku.penerbit', $keyword)
+                  ->orLike('buku.kategori', $keyword)
+                  ->groupEnd();
+        }
+
         $data = [
-            'buku'  => $this->bukuModel->getWithStockCount()->paginate(10, 'buku'),
-            'pager' => $this->bukuModel->pager,
+            'buku'    => $model->paginate(10, 'buku'),
+            'pager'   => $this->bukuModel->pager,
+            'keyword' => $keyword,
         ];
         return view('buku/index', $data);
     }

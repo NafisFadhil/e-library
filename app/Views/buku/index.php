@@ -33,6 +33,33 @@
           </a>
         </div>
 
+        <!-- Search Bar -->
+        <div class="row g-3 mb-4 align-items-center">
+          <div class="col-md-6 col-lg-5">
+            <form action="<?= base_url('dashboard/buku') ?>" method="get">
+              <div class="input-group shadow-sm rounded">
+                <span class="input-group-text bg-white text-muted border-end-0">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="keyword" class="form-control border-start-0 ps-0" placeholder="Cari judul, penulis, kategori, penerbit, ISBN..." value="<?= esc($keyword ?? '') ?>">
+                <?php if (!empty($keyword)): ?>
+                  <a href="<?= base_url('dashboard/buku') ?>" class="btn btn-outline-secondary border-start-0 border-end-0 d-flex align-items-center justify-content-center" title="Reset Pencarian">
+                    <i class="bi bi-x-lg"></i>
+                  </a>
+                <?php endif; ?>
+                <button class="btn btn-primary px-4" type="submit">Cari</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-6 col-lg-7 text-md-end">
+            <?php if (!empty($keyword)): ?>
+              <span class="text-muted small">
+                Menampilkan hasil pencarian untuk: <strong class="text-primary">"<?= esc($keyword) ?>"</strong>
+              </span>
+            <?php endif; ?>
+          </div>
+        </div>
+
         <div class="table-responsive">
           <table class="table table-bordered table-striped table-hover align-middle">
             <thead class="table-light">
@@ -89,7 +116,7 @@
                 <tr>
                   <td colspan="9" class="text-center py-4 text-muted">
                     <i class="bi bi-journal-x" style="font-size: 2rem;"></i>
-                    <p class="mt-2 mb-0">Belum ada data buku.</p>
+                    <p class="mt-2 mb-0"><?= !empty($keyword) ? 'Tidak ditemukan buku dengan kata kunci tersebut.' : 'Belum ada data buku.' ?></p>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -100,7 +127,7 @@
         <!-- Server-side Pagination Links -->
         <?php if (isset($pager)): ?>
           <div class="d-flex justify-content-end mt-3">
-            <?= $pager->links('buku', 'default_full') ?>
+            <?= $pager->only(['keyword'])->links('buku', 'default_full') ?>
           </div>
         <?php endif; ?>
 

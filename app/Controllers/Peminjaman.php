@@ -30,9 +30,22 @@ class Peminjaman extends BaseController
      */
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $model = $this->peminjamanModel->getWithRelations();
+
+        if (!empty($keyword)) {
+            $model->groupStart()
+                  ->like('peminjaman.id_peminjaman', $keyword)
+                  ->orLike('anggota.nama', $keyword)
+                  ->orLike('pustakawan.nama', $keyword)
+                  ->orLike('peminjaman.status_peminjaman', $keyword)
+                  ->groupEnd();
+        }
+
         $data = [
-            'peminjaman' => $this->peminjamanModel->getWithRelations()->paginate(10, 'peminjaman'),
+            'peminjaman' => $model->paginate(10, 'peminjaman'),
             'pager'      => $this->peminjamanModel->pager,
+            'keyword'    => $keyword,
         ];
         return view('peminjaman/index', $data);
     }

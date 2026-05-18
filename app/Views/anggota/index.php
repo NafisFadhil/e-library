@@ -1,6 +1,7 @@
 <?php
 /** @var array $anggota */
 /** @var \CodeIgniter\Pager\Pager $pager */
+/** @var string|null $keyword */
 ?>
 <?= $this->extend('layout/main') ?>
 
@@ -35,6 +36,33 @@
           <a href="<?= base_url('dashboard/anggota-list/create') ?>" class="btn btn-primary btn-sm">
             <i class="bi bi-plus-lg me-1"></i> Tambah Anggota
           </a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="row g-3 mb-4 align-items-center">
+          <div class="col-md-6 col-lg-5">
+            <form action="<?= base_url('dashboard/anggota-list') ?>" method="get">
+              <div class="input-group shadow-sm rounded">
+                <span class="input-group-text bg-white text-muted border-end-0">
+                  <i class="bi bi-search"></i>
+                </span>
+                <input type="text" name="keyword" class="form-control border-start-0 ps-0" placeholder="Cari nama, email, atau nomor telepon..." value="<?= esc($keyword ?? '') ?>">
+                <?php if (!empty($keyword)): ?>
+                  <a href="<?= base_url('dashboard/anggota-list') ?>" class="btn btn-outline-secondary border-start-0 border-end-0 d-flex align-items-center justify-content-center" title="Reset Pencarian">
+                    <i class="bi bi-x-lg"></i>
+                  </a>
+                <?php endif; ?>
+                <button class="btn btn-primary px-4" type="submit">Cari</button>
+              </div>
+            </form>
+          </div>
+          <div class="col-md-6 col-lg-7 text-md-end">
+            <?php if (!empty($keyword)): ?>
+              <span class="text-muted small">
+                Menampilkan hasil pencarian untuk: <strong class="text-primary">"<?= esc($keyword) ?>"</strong>
+              </span>
+            <?php endif; ?>
+          </div>
         </div>
 
         <div class="table-responsive">
@@ -81,7 +109,7 @@
                 <tr>
                   <td colspan="6" class="text-center py-4 text-muted">
                     <i class="bi bi-people" style="font-size: 2rem;"></i>
-                    <p class="mt-2 mb-0">Belum ada data anggota.</p>
+                    <p class="mt-2 mb-0"><?= !empty($keyword) ? 'Tidak ditemukan anggota dengan kata kunci tersebut.' : 'Belum ada data anggota.' ?></p>
                   </td>
                 </tr>
               <?php endif; ?>
@@ -92,7 +120,7 @@
         <!-- Pagination Links -->
         <?php if (isset($pager)): ?>
           <div class="d-flex justify-content-end mt-3">
-            <?= $pager->links('anggota', 'default_full') ?>
+            <?= $pager->only(['keyword'])->links('anggota', 'default_full') ?>
           </div>
         <?php endif; ?>
 

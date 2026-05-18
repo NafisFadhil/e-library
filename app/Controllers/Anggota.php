@@ -21,9 +21,21 @@ class Anggota extends BaseController
      */
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $model = $this->anggotaModel;
+
+        if (!empty($keyword)) {
+            $model = $model->groupStart()
+                           ->like('nama', $keyword)
+                           ->orLike('email', $keyword)
+                           ->orLike('no_telepon', $keyword)
+                           ->groupEnd();
+        }
+
         $data = [
-            'anggota' => $this->anggotaModel->orderBy('id_anggota', 'DESC')->paginate(10, 'anggota'),
+            'anggota' => $model->orderBy('id_anggota', 'DESC')->paginate(10, 'anggota'),
             'pager'   => $this->anggotaModel->pager,
+            'keyword' => $keyword,
         ];
         return view('anggota/index', $data);
     }
