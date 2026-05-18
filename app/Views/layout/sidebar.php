@@ -21,14 +21,14 @@
         </li>
 
         <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link <?= url_is('dashboard/anggota-list*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/anggota-list') ?>">
             <i class="bi bi-people"></i>
             <span>Data Anggota</span>
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link <?= url_is('dashboard/peminjaman*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/peminjaman') ?>">
             <i class="bi bi-journal-check"></i>
             <span>Peminjaman</span>
           </a>
@@ -37,14 +37,14 @@
         <li class="nav-heading">Layanan</li>
 
         <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link <?= url_is('dashboard/cari-buku*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/cari-buku') ?>">
             <i class="bi bi-search"></i>
             <span>Cari Buku</span>
           </a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link collapsed" href="#">
+          <a class="nav-link <?= url_is('dashboard/riwayat-pinjam*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/riwayat-pinjam') ?>">
             <i class="bi bi-clock-history"></i>
             <span>Riwayat Pinjam</span>
           </a>
