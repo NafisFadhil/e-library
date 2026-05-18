@@ -39,4 +39,58 @@ class Dashboard extends BaseController
         ];
         return view('dashboard/pustakawan', $data);
     }
+
+    public function search()
+    {
+        $keyword = $this->request->getGet('keyword');
+        
+        // Redirect kembali ke halaman sebelumnya (tempat semula) jika pencarian kosong
+        if (empty(trim((string)$keyword))) {
+            $returnUrl = $this->request->getGet('return_url');
+            if ($returnUrl) {
+                return redirect()->to($returnUrl);
+            }
+            return redirect()->back();
+        }
+        
+        $bukuModel       = new BukuModel();
+        $anggotaModel    = new AnggotaModel();
+        $peminjamanModel = new PeminjamanModel();
+
+        $buku       = [];
+        $anggota    = [];
+        $peminjaman = [];
+
+        if ($keyword) {
+            $buku = $bukuModel->groupStart()
+                              ->like('judul', $keyword)
+                              ->orLike('penulis', $keyword)
+                              ->orLike('isbn', $keyword)
+                              ->groupEnd()
+                              ->findAll();
+
+            $anggota = $anggotaModel->groupStart()
+                                    ->like('nama', $keyword)
+                                    ->orLike('email', $keyword)
+                                    ->groupEnd()
+                                    ->findAll();
+
+            $peminjaman = $peminjamanModel->select('peminjaman.*, anggota.nama as nama_anggota')
+                                          ->join('anggota', 'anggota.id_anggota = peminjaman.id_anggota', 'left')
+                                          ->groupStart()
+                                              ->like('peminjaman.id_peminjaman', $keyword)
+                                              ->orLike('anggota.nama', $keyword)
+                                          ->groupEnd()
+                                          ->findAll();
+        }
+
+        $data = [
+            'keyword'    => $keyword,
+            'buku'       => $buku,
+            'anggota'    => $anggota,
+            'peminjaman' => $peminjaman,
+        ];
+
+        return view('dashboard/search_results', $data);
+    }
 }

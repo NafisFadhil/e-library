@@ -10,10 +10,20 @@
     </div><!-- End Logo -->
 
     <div class="search-bar">
-      <form class="search-form d-flex align-items-center" method="POST" action="#">
-        <input type="text" name="query" placeholder="Search" title="Enter search keyword">
-        <button type="submit" title="Search"><i class="bi bi-search"></i></button>
+      <?php if (session()->get('role') === 'pustakawan'): ?>
+      <?php
+        $currentUri = current_url();
+        $returnUrl = isset($_GET['return_url']) ? $_GET['return_url'] : (strpos($currentUri, 'dashboard/search') === false ? $currentUri : base_url('dashboard/pustakawan'));
+      ?>
+      <form class="search-form d-flex align-items-center position-relative" method="GET" action="<?= base_url('dashboard/search') ?>">
+        <input type="hidden" name="return_url" value="<?= esc($returnUrl) ?>">
+        <input type="text" name="keyword" placeholder="Cari Buku, Anggota, Peminjaman..." title="Masukkan kata kunci pencarian" value="<?= esc($keyword ?? '') ?>" style="padding-right: 60px;">
+        <?php if (!empty($keyword)): ?>
+          <a href="<?= esc($returnUrl) ?>" title="Tutup Pencarian" class="text-danger" style="position: absolute; right: 40px; padding: 5px;"><i class="bi bi-x-circle-fill"></i></a>
+        <?php endif; ?>
+        <button type="submit" title="Cari"><i class="bi bi-search"></i></button>
       </form>
+      <?php endif; ?>
     </div><!-- End Search Bar -->
 
     <nav class="header-nav ms-auto">
