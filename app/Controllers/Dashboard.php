@@ -44,6 +44,15 @@ class Dashboard extends BaseController
     {
         $keyword = $this->request->getGet('keyword');
         
+        // Redirect kembali ke halaman sebelumnya (tempat semula) jika pencarian kosong
+        if (empty(trim((string)$keyword))) {
+            $returnUrl = $this->request->getGet('return_url');
+            if ($returnUrl) {
+                return redirect()->to($returnUrl);
+            }
+            return redirect()->back();
+        }
+        
         $bukuModel       = new BukuModel();
         $anggotaModel    = new AnggotaModel();
         $peminjamanModel = new PeminjamanModel();
