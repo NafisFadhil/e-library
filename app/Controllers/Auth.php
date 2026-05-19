@@ -57,6 +57,7 @@ class Auth extends BaseController
             'nama'      => $user['nama'],
             'role'      => $role,
             'logged_in' => true,
+            'is_admin'  => ($role === 'pustakawan') ? (bool)$user['is_admin'] : false,
         ];
         session()->set($data);
         return true;

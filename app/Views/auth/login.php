@@ -107,9 +107,9 @@
                         <?= csrf_field() ?>
                         <input type="hidden" name="role" value="pustakawan">
                         <div class="col-12">
-                          <label for="usernamePustakawan" class="form-label">Username</label>
+                          <label for="usernamePustakawan" class="form-label">Username / Email</label>
                           <input type="text" name="username" class="form-control" id="usernamePustakawan" required>
-                          <div class="invalid-feedback">Silakan masukkan username Anda.</div>
+                          <div class="invalid-feedback">Silakan masukkan username atau email Anda.</div>
                         </div>
                         <div class="col-12">
                           <label for="passwordPustakawan" class="form-label">Password</label>

@@ -10,7 +10,7 @@ class PustakawanModel extends Model
     protected $primaryKey = 'id_pustakawan';
 
     protected $allowedFields = [
-        'nama', 'username', 'email', 'password'
+        'nama', 'username', 'email', 'password', 'is_admin'
     ];
 
     protected $useTimestamps = false;

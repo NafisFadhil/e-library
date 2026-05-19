@@ -27,6 +27,15 @@
           </a>
         </li>
 
+        <?php if (session()->get('is_admin')) : ?>
+          <li class="nav-item">
+            <a class="nav-link <?= url_is('dashboard/pustakawan-list*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/pustakawan-list') ?>">
+              <i class="bi bi-shield-lock"></i>
+              <span>Data Pustakawan</span>
+            </a>
+          </li>
+        <?php endif; ?>
+
         <li class="nav-item">
           <a class="nav-link <?= url_is('dashboard/peminjaman*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/peminjaman') ?>">
             <i class="bi bi-journal-check"></i>

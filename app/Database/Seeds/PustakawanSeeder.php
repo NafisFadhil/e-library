@@ -16,12 +16,14 @@ class PustakawanSeeder extends Seeder
                 'username' => 'admin',
                 'email'    => 'admin@elib.com',
                 'password' => password_hash('admin123', PASSWORD_BCRYPT),
+                'is_admin' => 1,
             ],
             [
                 'nama'     => 'Pustakawan Pusat',
                 'username' => 'pustakawan',
                 'email'    => 'pustakawan@elib.com',
                 'password' => password_hash('pustakawan123', PASSWORD_BCRYPT),
+                'is_admin' => 0,
             ]
         ];
 

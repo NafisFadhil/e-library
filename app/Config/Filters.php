@@ -36,6 +36,7 @@ class Filters extends BaseFilters
         'performance'     => PerformanceMetrics::class,
         'auth_anggota'    => \App\Filters\AuthAnggota::class,
         'auth_pustakawan' => \App\Filters\AuthPustakawan::class,
+        'auth_admin_pustakawan' => \App\Filters\AuthAdminPustakawan::class,
     ];
 
     /**
