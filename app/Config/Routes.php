@@ -62,3 +62,14 @@ $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) 
     $routes->post('peminjaman/update/(:segment)', 'Peminjaman::update/$1');
     $routes->get('peminjaman/delete/(:segment)', 'Peminjaman::delete/$1');
 });
+
+$routes->group('dashboard', ['filter' => 'auth_admin_pustakawan'], function ($routes) {
+    // CRUD Pustakawan
+    $routes->get('pustakawan-list', 'Pustakawan::index');
+    $routes->get('pustakawan-list/create', 'Pustakawan::create');
+    $routes->post('pustakawan-list/store', 'Pustakawan::store');
+    $routes->get('pustakawan-list/edit/(:segment)', 'Pustakawan::edit/$1');
+    $routes->post('pustakawan-list/update/(:segment)', 'Pustakawan::update/$1');
+    $routes->get('pustakawan-list/delete/(:segment)', 'Pustakawan::delete/$1');
+});
+

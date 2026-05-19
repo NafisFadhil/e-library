@@ -131,3 +131,8 @@ _modules/*
 #-------------------------
 public/uploads/*
 !public/uploads/covers/.gitkeep
+
+#-------------------------
+# Agent Directory
+#-------------------------
+.agents/
