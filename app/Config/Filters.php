@@ -37,6 +37,7 @@ class Filters extends BaseFilters
         'auth_anggota'    => \App\Filters\AuthAnggota::class,
         'auth_pustakawan' => \App\Filters\AuthPustakawan::class,
         'auth_admin_pustakawan' => \App\Filters\AuthAdminPustakawan::class,
+        'api_auth'              => \App\Filters\ApiAuth::class,
     ];
 
     /**

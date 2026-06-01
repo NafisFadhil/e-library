@@ -42,13 +42,29 @@
             <span>Peminjaman</span>
           </a>
         </li>
+
+        <li class="nav-heading">Webservice</li>
+
+        <li class="nav-item">
+          <a class="nav-link <?= url_is('dashboard/api-keys*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/api-keys') ?>">
+            <i class="bi bi-key"></i>
+            <span>API Keys</span>
+          </a>
+        </li>
       <?php else : ?>
         <li class="nav-heading">Layanan</li>
 
         <li class="nav-item">
-          <a class="nav-link <?= url_is('dashboard/cari-buku*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/cari-buku') ?>">
+          <a class="nav-link <?= url_is('dashboard/cari-buku') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/cari-buku') ?>">
             <i class="bi bi-search"></i>
             <span>Cari Buku</span>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link <?= url_is('dashboard/cari-buku-online*') ? '' : 'collapsed' ?>" href="<?= base_url('dashboard/cari-buku-online') ?>">
+            <i class="bi bi-globe"></i>
+            <span>Cari Buku Online</span>
           </a>
         </li>
 
