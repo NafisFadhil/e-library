@@ -126,4 +126,54 @@ class BukuApi extends ResourceController
             'data'    => $data,
         ]);
     }
+
+    /**
+     * GET /api/v1/availability/{id}
+     * Cek ketersediaan berdasarkan ID (bisa ISBN atau Kode Eksemplar).
+     */
+    public function availability($id = null)
+    {
+        if (!$id) {
+            return $this->failValidationErrors('ID (ISBN atau Kode Eksemplar) wajib disertakan.');
+        }
+
+        // 1. Coba cari sebagai kode_eksemplar
+        $eksemplar = $this->eksemplarModel->find($id);
+        if ($eksemplar) {
+            return $this->respond([
+                'status'  => 200,
+                'message' => 'Data ketersediaan eksemplar berhasil diambil.',
+                'data'    => [
+                    'tipe_id'      => 'kode_eksemplar',
+                    'id'           => $id,
+                    'isbn'         => $eksemplar['isbn'],
+                    'kondisi'      => $eksemplar['kondisi'],
+                    'ketersediaan' => $eksemplar['ketersediaan'],
+                    'lokasi_rak'   => $eksemplar['lokasi_rak']
+                ]
+            ]);
+        }
+
+        // 2. Jika tidak ketemu, coba cari sebagai ISBN
+        $buku = $this->bukuModel->find($id);
+        if ($buku) {
+            $tersedia = $this->eksemplarModel->where('isbn', $id)->where('ketersediaan', 'Tersedia')->countAllResults();
+            $total    = $this->eksemplarModel->where('isbn', $id)->countAllResults();
+            
+            return $this->respond([
+                'status'  => 200,
+                'message' => 'Data ketersediaan buku berhasil diambil.',
+                'data'    => [
+                    'tipe_id'           => 'isbn',
+                    'id'                => $id,
+                    'judul'             => $buku['judul'],
+                    'total_eksemplar'   => $total,
+                    'eksemplar_tersedia'=> $tersedia,
+                    'status'            => $tersedia > 0 ? 'Tersedia' : 'Habis'
+                ]
+            ]);
+        }
+
+        return $this->failNotFound('Data dengan ID/ISBN "' . $id . '" tidak ditemukan.');
+    }
 }

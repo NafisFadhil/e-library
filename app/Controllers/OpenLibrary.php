@@ -85,4 +85,68 @@ class OpenLibrary extends BaseController
 
         return view('anggota_fitur/cari_buku_online', $data);
     }
+
+    /**
+     * Fetch detail buku berdasarkan ISBN dari Open Library API.
+     * Digunakan untuk fitur auto-fill via AJAX di halaman Tambah Buku.
+     */
+    public function fetchByIsbn()
+    {
+        $isbn = $this->request->getGet('isbn');
+        
+        if (empty($isbn)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'ISBN tidak boleh kosong.'
+            ]);
+        }
+
+        $isbn = trim((string)$isbn);
+        
+        try {
+            $client = \Config\Services::curlrequest();
+            $url = "https://openlibrary.org/api/books?bibkeys=ISBN:{$isbn}&format=json&jscmd=data";
+            
+            $response = $client->request('GET', $url, [
+                'timeout'         => 10,
+                'connect_timeout' => 5,
+            ]);
+
+            if ($response->getStatusCode() === 200) {
+                $body = json_decode($response->getBody(), true);
+                $key = "ISBN:{$isbn}";
+
+                if (isset($body[$key])) {
+                    $bookData = $body[$key];
+                    
+                    $result = [
+                        'success'      => true,
+                        'judul'        => $bookData['title'] ?? '',
+                        'penulis'      => isset($bookData['authors']) ? implode(', ', array_column($bookData['authors'], 'name')) : '',
+                        'penerbit'     => isset($bookData['publishers']) ? implode(', ', array_column($bookData['publishers'], 'name')) : '',
+                        'tahun_terbit' => isset($bookData['publish_date']) ? substr($bookData['publish_date'], -4) : '', // Try to extract year
+                        'kategori'     => isset($bookData['subjects']) ? implode(', ', array_slice(array_column($bookData['subjects'], 'name'), 0, 3)) : '', // Ambil maksimal 3 kategori pertama
+                        'cover_url'    => $bookData['cover']['large'] ?? $bookData['cover']['medium'] ?? $bookData['cover']['small'] ?? null,
+                    ];
+                    
+                    return $this->response->setJSON($result);
+                } else {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'Data buku tidak ditemukan di Open Library.'
+                    ]);
+                }
+            } else {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Gagal menghubungi server Open Library.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ]);
+        }
+    }
 }

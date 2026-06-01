@@ -256,6 +256,64 @@ curl -X POST \
 
 ---
 
+#### `GET /api/v1/availability/{id}`
+
+Mengambil status ketersediaan berdasarkan ID. ID dapat berupa **Kode Eksemplar** (contoh: EKS-001) atau **ISBN** buku.
+
+**Path Parameters:**
+
+| Parameter | Tipe | Keterangan |
+|-----------|------|------------|
+| `id` | string | Kode Eksemplar atau ISBN |
+
+**Contoh Request (Mencari dengan Kode Eksemplar):**
+
+```bash
+curl -H "X-API-KEY: your_key" http://localhost:8080/api/v1/availability/EKS-001
+```
+
+**Contoh Response (Jika ID adalah Kode Eksemplar):**
+
+```json
+{
+  "status": 200,
+  "message": "Data ketersediaan eksemplar berhasil diambil.",
+  "data": {
+    "tipe_id": "kode_eksemplar",
+    "id": "EKS-001",
+    "isbn": "978-602-1234-56-7",
+    "kondisi": "Baik",
+    "ketersediaan": "Tersedia",
+    "lokasi_rak": "A-01"
+  }
+}
+```
+
+**Contoh Request (Mencari dengan ISBN):**
+
+```bash
+curl -H "X-API-KEY: your_key" http://localhost:8080/api/v1/availability/978-602-1234-56-7
+```
+
+**Contoh Response (Jika ID adalah ISBN):**
+
+```json
+{
+  "status": 200,
+  "message": "Data ketersediaan buku berhasil diambil.",
+  "data": {
+    "tipe_id": "isbn",
+    "id": "978-602-1234-56-7",
+    "judul": "Pemrograman Web dengan PHP",
+    "total_eksemplar": 5,
+    "eksemplar_tersedia": 3,
+    "status": "Tersedia"
+  }
+}
+```
+
+---
+
 ### 2. Peminjaman
 
 #### `GET /api/v1/peminjaman`

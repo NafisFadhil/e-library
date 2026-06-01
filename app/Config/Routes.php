@@ -34,6 +34,7 @@ $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) 
 
     // CRUD Buku
     $routes->get('buku', 'Buku::index');
+    $routes->get('buku/fetch-isbn', 'OpenLibrary::fetchByIsbn');
     $routes->get('buku/create', 'Buku::create');
     $routes->post('buku/store', 'Buku::store');
     $routes->get('buku/edit/(:segment)', 'Buku::edit/$1');
@@ -90,6 +91,9 @@ $routes->group('api/v1', ['filter' => 'api_auth'], function ($routes) {
     $routes->get('buku', 'Api\BukuApi::index');
     $routes->get('buku/(:segment)', 'Api\BukuApi::show/$1');
     $routes->post('buku', 'Api\BukuApi::create');
+
+    // API Availability
+    $routes->get('availability/(:segment)', 'Api\BukuApi::availability/$1');
 
     // API Peminjaman
     $routes->get('peminjaman', 'Api\PeminjamanApi::index');

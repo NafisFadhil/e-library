@@ -26,7 +26,13 @@
           <div class="row g-3">
             <div class="col-md-6 col-12">
               <label for="isbn" class="form-label">ISBN <span class="text-danger">*</span></label>
-              <input type="text" name="isbn" id="isbn" class="form-control" placeholder="Contoh: 9786020331607" value="<?= old('isbn') ?>" required>
+              <div class="input-group">
+                <input type="text" name="isbn" id="isbn" class="form-control" placeholder="Contoh: 9786020331607" value="<?= old('isbn') ?>" required>
+                <button class="btn btn-outline-secondary" type="button" id="btnCariIsbn">
+                  <i class="bi bi-search"></i> Cari Data
+                </button>
+              </div>
+              <div class="form-text" id="isbnHelp">Masukkan ISBN, lalu klik Cari Data untuk auto-fill dari Open Library.</div>
             </div>
 
             <div class="col-md-6 col-12">
@@ -129,6 +135,65 @@ document.addEventListener('DOMContentLoaded', function () {
     coverFileOpt.checked = true;
     toggleCoverInputs();
   <?php endif; ?>
+
+  // Auto-fill Open Library AJAX
+  const btnCariIsbn = document.getElementById('btnCariIsbn');
+  const inputIsbn = document.getElementById('isbn');
+  const isbnHelp = document.getElementById('isbnHelp');
+  
+  // Handle Enter key on ISBN input (prevent form submit, trigger search instead)
+  inputIsbn.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault(); // Mencegah submit form bawaan
+      btnCariIsbn.click();    // Men-trigger pencarian
+    }
+  });
+  
+  btnCariIsbn.addEventListener('click', function() {
+    const isbn = inputIsbn.value.trim();
+    if (!isbn) {
+      alert('Silakan masukkan ISBN terlebih dahulu.');
+      inputIsbn.focus();
+      return;
+    }
+
+    const originalBtnText = btnCariIsbn.innerHTML;
+    btnCariIsbn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Mencari...';
+    btnCariIsbn.disabled = true;
+    isbnHelp.innerHTML = '<span class="text-primary">Mencari data ke Open Library...</span>';
+
+    fetch(`<?= base_url('dashboard/buku/fetch-isbn') ?>?isbn=${isbn}`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          document.getElementById('judul').value = data.judul;
+          document.getElementById('penulis').value = data.penulis;
+          document.getElementById('penerbit').value = data.penerbit;
+          document.getElementById('tahun_terbit').value = data.tahun_terbit;
+          document.getElementById('kategori').value = data.kategori; // Tambahan auto-fill kategori
+          
+          if (data.cover_url) {
+            coverUrlOpt.checked = true;
+            toggleCoverInputs();
+            urlInput.value = data.cover_url;
+          }
+          
+          isbnHelp.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Data berhasil ditemukan dan diisi otomatis!</span>';
+        } else {
+          alert(data.message || 'Data tidak ditemukan.');
+          isbnHelp.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle"></i> Data tidak ditemukan. Silakan isi manual.</span>';
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan koneksi.');
+        isbnHelp.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle"></i> Terjadi kesalahan koneksi jaringan.</span>';
+      })
+      .finally(() => {
+        btnCariIsbn.innerHTML = originalBtnText;
+        btnCariIsbn.disabled = false;
+      });
+  });
 });
 </script>
 <?= $this->endSection() ?>
