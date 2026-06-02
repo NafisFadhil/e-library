@@ -20,6 +20,9 @@ $routes->group('dashboard', ['filter' => 'auth_anggota'], function ($routes) {
     // Fitur Cari Buku
     $routes->get('cari-buku', 'AnggotaFitur::cariBuku');
 
+    // Fitur Cari Buku Online (Konsumsi API Eksternal — Open Library)
+    $routes->get('cari-buku-online', 'OpenLibrary::search');
+
     // Fitur Riwayat Pinjam
     $routes->get('riwayat-pinjam', 'AnggotaFitur::riwayatPinjam');
     $routes->get('riwayat-pinjam/detail/(:segment)', 'AnggotaFitur::detailPinjam/$1');
@@ -31,6 +34,7 @@ $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) 
 
     // CRUD Buku
     $routes->get('buku', 'Buku::index');
+    $routes->get('buku/fetch-isbn', 'OpenLibrary::fetchByIsbn');
     $routes->get('buku/create', 'Buku::create');
     $routes->post('buku/store', 'Buku::store');
     $routes->get('buku/edit/(:segment)', 'Buku::edit/$1');
@@ -61,6 +65,12 @@ $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) 
     $routes->get('peminjaman/edit/(:segment)', 'Peminjaman::edit/$1');
     $routes->post('peminjaman/update/(:segment)', 'Peminjaman::update/$1');
     $routes->get('peminjaman/delete/(:segment)', 'Peminjaman::delete/$1');
+
+    // Manajemen API Key
+    $routes->get('api-keys', 'ApiKeyController::index');
+    $routes->post('api-keys/generate', 'ApiKeyController::generate');
+    $routes->get('api-keys/toggle/(:segment)', 'ApiKeyController::toggleStatus/$1');
+    $routes->get('api-keys/delete/(:segment)', 'ApiKeyController::delete/$1');
 });
 
 $routes->group('dashboard', ['filter' => 'auth_admin_pustakawan'], function ($routes) {
@@ -73,3 +83,14 @@ $routes->group('dashboard', ['filter' => 'auth_admin_pustakawan'], function ($ro
     $routes->get('pustakawan-list/delete/(:segment)', 'Pustakawan::delete/$1');
 });
 
+// ============================================================
+// REST API Endpoints (Webservice Server — dilindungi API Key)
+// ============================================================
+$routes->group('api', ['filter' => 'api_auth'], function ($routes) {
+    // API Buku
+    $routes->get('books', 'Api\BukuApi::index');
+    $routes->get('books/(:segment)', 'Api\BukuApi::show/$1');
+
+    // API Availability
+    $routes->get('availability/(:segment)', 'Api\BukuApi::availability/$1');
+});
