@@ -21,7 +21,7 @@ class BukuApi extends ResourceController
     }
 
     /**
-     * GET /api/v1/buku
+     * GET /api/books
      * List semua buku dengan pagination dan pencarian.
      */
     public function index()
@@ -66,7 +66,7 @@ class BukuApi extends ResourceController
     }
 
     /**
-     * GET /api/v1/buku/{isbn}
+     * GET /api/books/{isbn}
      * Detail satu buku beserta daftar eksemplarnya.
      */
     public function show($isbn = null)
@@ -90,45 +90,7 @@ class BukuApi extends ResourceController
     }
 
     /**
-     * POST /api/v1/buku
-     * Tambah buku baru via API.
-     */
-    public function create()
-    {
-        $rules = [
-            'isbn'         => 'required|max_length[20]|is_unique[buku.isbn]',
-            'judul'        => 'required|max_length[255]',
-            'kategori'     => 'required|max_length[100]',
-            'tahun_terbit' => 'required|exact_length[4]|numeric',
-            'penerbit'     => 'required|max_length[100]',
-            'penulis'      => 'required|max_length[100]',
-        ];
-
-        if (!$this->validate($rules)) {
-            return $this->failValidationErrors($this->validator->getErrors());
-        }
-
-        $data = [
-            'isbn'         => $this->request->getJsonVar('isbn') ?? $this->request->getPost('isbn'),
-            'judul'        => $this->request->getJsonVar('judul') ?? $this->request->getPost('judul'),
-            'kategori'     => $this->request->getJsonVar('kategori') ?? $this->request->getPost('kategori'),
-            'url_cover'    => $this->request->getJsonVar('url_cover') ?? $this->request->getPost('url_cover'),
-            'tahun_terbit' => $this->request->getJsonVar('tahun_terbit') ?? $this->request->getPost('tahun_terbit'),
-            'penerbit'     => $this->request->getJsonVar('penerbit') ?? $this->request->getPost('penerbit'),
-            'penulis'      => $this->request->getJsonVar('penulis') ?? $this->request->getPost('penulis'),
-        ];
-
-        $this->bukuModel->insert($data);
-
-        return $this->respondCreated([
-            'status'  => 201,
-            'message' => 'Buku berhasil ditambahkan.',
-            'data'    => $data,
-        ]);
-    }
-
-    /**
-     * GET /api/v1/availability/{id}
+     * GET /api/availability/{id}
      * Cek ketersediaan berdasarkan ID (bisa ISBN atau Kode Eksemplar).
      */
     public function availability($id = null)

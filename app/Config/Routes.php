@@ -86,16 +86,11 @@ $routes->group('dashboard', ['filter' => 'auth_admin_pustakawan'], function ($ro
 // ============================================================
 // REST API Endpoints (Webservice Server — dilindungi API Key)
 // ============================================================
-$routes->group('api/v1', ['filter' => 'api_auth'], function ($routes) {
+$routes->group('api', ['filter' => 'api_auth'], function ($routes) {
     // API Buku
-    $routes->get('buku', 'Api\BukuApi::index');
-    $routes->get('buku/(:segment)', 'Api\BukuApi::show/$1');
-    $routes->post('buku', 'Api\BukuApi::create');
+    $routes->get('books', 'Api\BukuApi::index');
+    $routes->get('books/(:segment)', 'Api\BukuApi::show/$1');
 
     // API Availability
     $routes->get('availability/(:segment)', 'Api\BukuApi::availability/$1');
-
-    // API Peminjaman
-    $routes->get('peminjaman', 'Api\PeminjamanApi::index');
-    $routes->get('peminjaman/(:segment)', 'Api\PeminjamanApi::show/$1');
 });
