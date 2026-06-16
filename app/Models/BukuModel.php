@@ -21,7 +21,7 @@ class BukuModel extends Model
      */
     public function getWithStockCount()
     {
-        return $this->select('buku.*, COUNT(eksemplar.kode) as jumlah_eksemplar')
+        return $this->select("buku.*, COUNT(eksemplar.kode) as jumlah_eksemplar, SUM(CASE WHEN eksemplar.ketersediaan = 'Tersedia' THEN 1 ELSE 0 END) as stok_tersedia", false)
                     ->join('eksemplar', 'eksemplar.isbn = buku.isbn', 'left')
                     ->groupBy('buku.isbn');
     }

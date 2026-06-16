@@ -75,6 +75,11 @@
                       <a href="<?= base_url('dashboard/riwayat-pinjam/detail/' . $item['id_peminjaman']) ?>" class="btn btn-info btn-sm text-dark" title="Detail">
                         <i class="bi bi-eye"></i>
                       </a>
+                      <?php if (isset($pembayaran_status[$item['id_peminjaman']]) && $pembayaran_status[$item['id_peminjaman']] === 'Menunggu'): ?>
+                        <a href="<?= base_url('dashboard/riwayat-pinjam/bayar/' . $item['id_peminjaman']) ?>" class="btn btn-warning btn-sm text-dark" title="Bayar Denda">
+                          <i class="bi bi-cash-coin"></i> Bayar
+                        </a>
+                      <?php endif; ?>
                     </td>
                   </tr>
                 <?php endforeach; ?>

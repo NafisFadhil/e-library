@@ -7,6 +7,7 @@ use App\Models\PeminjamanModel;
 use App\Models\DetailPeminjamanModel;
 use App\Models\AnggotaModel;
 use App\Models\EksemplarModel;
+use App\Models\PembayaranDendaModel;
 
 class Peminjaman extends BaseController
 {
@@ -14,6 +15,7 @@ class Peminjaman extends BaseController
     protected $detailModel;
     protected $anggotaModel;
     protected $eksemplarModel;
+    protected $pembayaranModel;
     protected $helpers = ['form', 'url'];
 
     public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
@@ -23,6 +25,7 @@ class Peminjaman extends BaseController
         $this->detailModel     = new DetailPeminjamanModel();
         $this->anggotaModel    = new AnggotaModel();
         $this->eksemplarModel  = new EksemplarModel();
+        $this->pembayaranModel = new PembayaranDendaModel();
     }
 
     /**
@@ -166,10 +169,12 @@ class Peminjaman extends BaseController
         }
 
         $detail = $this->detailModel->getByPeminjaman($id);
+        $pembayaran = $this->pembayaranModel->getByPeminjaman($id);
 
         $data = [
             'peminjaman' => $peminjaman,
             'detail'     => $detail,
+            'pembayaran' => $pembayaran,
         ];
         return view('peminjaman/show', $data);
     }
@@ -230,6 +235,7 @@ class Peminjaman extends BaseController
         if ($newStatus === 'Selesai') {
             $now = date('Y-m-d H:i:s');
             $details = $this->detailModel->where('id_peminjaman', $id)->findAll();
+            $totalDenda = 0;
 
             foreach ($details as $detail) {
                 // Update tanggal kembali jika belum ada
@@ -249,10 +255,28 @@ class Peminjaman extends BaseController
                         ->where('id_peminjaman', $detail['id_peminjaman'])
                         ->where('kode_eksemplar', $detail['kode_eksemplar'])
                         ->update(['tanggal_kembali' => $now, 'denda' => $denda]);
+                    
+                    $totalDenda += $denda;
+                } else {
+                    $totalDenda += $detail['denda'];
                 }
 
                 // Kembalikan ketersediaan eksemplar
                 $this->eksemplarModel->update($detail['kode_eksemplar'], ['ketersediaan' => 'Tersedia']);
+            }
+
+            // OTOMATIS TERBITKAN DENDA JIKA ADA
+            if ($totalDenda > 0) {
+                $existingPembayaran = $this->pembayaranModel->getByPeminjaman($id);
+                if (!$existingPembayaran) {
+                    $this->pembayaranModel->insert([
+                        'id_peminjaman'     => $id,
+                        'metode_pembayaran' => 'Menunggu',
+                        'jumlah_denda'      => $totalDenda,
+                        'status_pembayaran' => 'Menunggu',
+                        'catatan_admin'     => 'Denda keterlambatan sistem. Silakan pilih metode pembayaran Tripay atau hubungi admin.',
+                    ]);
+                }
             }
         }
 
@@ -268,6 +292,10 @@ class Peminjaman extends BaseController
         if ($newStatus === 'Dipinjam' && empty($peminjaman['tanggal_pinjam'])) {
             $updateData['tanggal_pinjam']      = date('Y-m-d H:i:s');
             $updateData['tanggal_jatuh_tempo'] = date('Y-m-d H:i:s', strtotime('+7 days'));
+        }
+
+        if (empty($peminjaman['id_pustakawan'])) {
+            $updateData['id_pustakawan'] = session()->get('user_id');
         }
 
         $this->peminjamanModel->update($id, $updateData);
@@ -301,5 +329,89 @@ class Peminjaman extends BaseController
 
         session()->setFlashdata('success', 'Data peminjaman berhasil dihapus.');
         return redirect()->to('dashboard/peminjaman');
+    }
+
+    /**
+     * Terbitkan tagihan denda untuk anggota.
+     */
+    public function terbitkanDenda($id)
+    {
+        $peminjaman = $this->peminjamanModel->find($id);
+        if (!$peminjaman) {
+            session()->setFlashdata('error', 'Data peminjaman tidak ditemukan.');
+            return redirect()->to('dashboard/peminjaman');
+        }
+
+        $rules = [
+            'catatan_admin' => 'required',
+        ];
+
+        $messages = [
+            'catatan_admin' => [
+                'required' => 'Informasi rekening & catatan admin wajib diisi.',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+            session()->setFlashdata('error', implode('<br>', $this->validator->getErrors()));
+            return redirect()->back()->withInput();
+        }
+
+        $details = $this->detailModel->where('id_peminjaman', $id)->findAll();
+        $totalDenda = 0;
+        foreach ($details as $detail) {
+            $totalDenda += $detail['denda'];
+        }
+
+        if ($totalDenda <= 0) {
+            session()->setFlashdata('error', 'Tidak ada denda yang terhitung untuk peminjaman ini.');
+            return redirect()->back();
+        }
+
+        // Cek jika sudah diterbitkan
+        $existing = $this->pembayaranModel->getByPeminjaman($id);
+        if ($existing) {
+            session()->setFlashdata('error', 'Tagihan denda sudah diterbitkan sebelumnya.');
+            return redirect()->back();
+        }
+
+        $this->pembayaranModel->insert([
+            'id_peminjaman'     => $id,
+            'metode_pembayaran' => 'Menunggu',
+            'jumlah_denda'      => $totalDenda,
+            'status_pembayaran' => 'Menunggu',
+            'catatan_admin'     => $this->request->getPost('catatan_admin'),
+        ]);
+
+        session()->setFlashdata('success', 'Tagihan denda berhasil diterbitkan.');
+        return redirect()->to('dashboard/peminjaman/show/' . $id);
+    }
+
+    /**
+     * Konfirmasi pembayaran denda manual.
+     */
+    public function konfirmasiBayar($id)
+    {
+        $peminjaman = $this->peminjamanModel->find($id);
+        if (!$peminjaman) {
+            session()->setFlashdata('error', 'Data peminjaman tidak ditemukan.');
+            return redirect()->to('dashboard/peminjaman');
+        }
+
+        $idPembayaran = $this->request->getPost('id_pembayaran');
+        $pembayaran   = $this->pembayaranModel->find($idPembayaran);
+
+        if (!$pembayaran) {
+            session()->setFlashdata('error', 'Data pembayaran tidak ditemukan.');
+            return redirect()->back();
+        }
+
+        $this->pembayaranModel->update($idPembayaran, [
+            'status_pembayaran' => 'Lunas',
+            'waktu_pembayaran'  => date('Y-m-d H:i:s'),
+        ]);
+
+        session()->setFlashdata('success', 'Pembayaran denda berhasil dikonfirmasi Lunas.');
+        return redirect()->to('dashboard/peminjaman/show/' . $id);
     }
 }

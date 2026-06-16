@@ -19,6 +19,7 @@ $routes->group('dashboard', ['filter' => 'auth_anggota'], function ($routes) {
 
     // Fitur Cari Buku
     $routes->get('cari-buku', 'AnggotaFitur::cariBuku');
+    $routes->post('ajukan-pinjam', 'AnggotaFitur::ajukanPinjam');
 
     // Fitur Cari Buku Online (Konsumsi API Eksternal — Open Library)
     $routes->get('cari-buku-online', 'OpenLibrary::search');
@@ -26,6 +27,9 @@ $routes->group('dashboard', ['filter' => 'auth_anggota'], function ($routes) {
     // Fitur Riwayat Pinjam
     $routes->get('riwayat-pinjam', 'AnggotaFitur::riwayatPinjam');
     $routes->get('riwayat-pinjam/detail/(:segment)', 'AnggotaFitur::detailPinjam/$1');
+    $routes->get('riwayat-pinjam/bayar/(:num)', 'AnggotaFitur::pilihPembayaran/$1');
+    $routes->post('riwayat-pinjam/bayar-tripay/(:num)', 'AnggotaFitur::bayarTripay/$1');
+    $routes->post('riwayat-pinjam/upload-bukti/(:num)', 'AnggotaFitur::uploadBuktiBayar/$1');
 });
 
 $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) {
@@ -65,6 +69,8 @@ $routes->group('dashboard', ['filter' => 'auth_pustakawan'], function ($routes) 
     $routes->get('peminjaman/edit/(:segment)', 'Peminjaman::edit/$1');
     $routes->post('peminjaman/update/(:segment)', 'Peminjaman::update/$1');
     $routes->get('peminjaman/delete/(:segment)', 'Peminjaman::delete/$1');
+    $routes->post('peminjaman/terbitkan-denda/(:num)', 'Peminjaman::terbitkanDenda/$1');
+    $routes->post('peminjaman/konfirmasi-bayar/(:num)', 'Peminjaman::konfirmasiBayar/$1');
 
     // Manajemen API Key
     $routes->get('api-keys', 'ApiKeyController::index');
@@ -94,3 +100,7 @@ $routes->group('api', ['filter' => 'api_auth'], function ($routes) {
     // API Availability
     $routes->get('availability/(:segment)', 'Api\BukuApi::availability/$1');
 });
+
+// Tripay Callback Webhook (tidak dilindungi filter api_auth)
+$routes->post('api/tripay-callback', 'Api\TripayCallback::index');
+

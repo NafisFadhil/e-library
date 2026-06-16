@@ -56,6 +56,7 @@
                 <th>Penerbit</th>
                 <th class="text-center">Tahun</th>
                 <th class="text-center">Stok</th>
+                <th class="text-center">Aksi</th>
               </tr>
             </thead>
             <tbody>
@@ -78,16 +79,29 @@
                     <td class="text-center"><?= esc($item['tahun_terbit']) ?></td>
                     <td class="text-center">
                       <?php
-                        $stok = (int)($item['jumlah_eksemplar'] ?? 0);
+                        $stok = (int)($item['stok_tersedia'] ?? 0);
                         $badgeClass = $stok > 0 ? 'bg-success' : 'bg-danger';
                       ?>
                       <span class="badge <?= $badgeClass ?>"><?= $stok ?></span>
+                    </td>
+                    <td class="text-center">
+                      <?php if ($stok > 0): ?>
+                        <form action="<?= base_url('dashboard/ajukan-pinjam') ?>" method="post" class="d-inline">
+                          <?= csrf_field() ?>
+                          <input type="hidden" name="isbn" value="<?= esc($item['isbn']) ?>">
+                          <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Ajukan peminjaman untuk buku ini?')">
+                            <i class="bi bi-hand-index-thumb"></i> Pinjam
+                          </button>
+                        </form>
+                      <?php else: ?>
+                        <button class="btn btn-sm btn-secondary" disabled>Kosong</button>
+                      <?php endif; ?>
                     </td>
                   </tr>
                 <?php endforeach; ?>
               <?php else: ?>
                 <tr>
-                  <td colspan="7" class="text-center py-4 text-muted">
+                  <td colspan="8" class="text-center py-4 text-muted">
                     <i class="bi bi-journal-x" style="font-size: 2rem;"></i>
                     <p class="mt-2 mb-0"><?= !empty($keyword) ? 'Tidak ditemukan buku dengan kata kunci tersebut.' : 'Belum ada data buku.' ?></p>
                   </td>
