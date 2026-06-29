@@ -33,6 +33,13 @@ class BukuApi extends ResourceController
         if ($page < 1) $page = 1;
         if ($perPage < 1 || $perPage > 100) $perPage = 10;
 
+        $cacheKey = 'api_books_' . md5("{$page}_{$perPage}_{$keyword}");
+        $cached   = cache($cacheKey);
+
+        if ($cached !== null) {
+            return $this->respond($cached);
+        }
+
         $builder = $this->bukuModel->getWithStockCount();
 
         if (!empty($keyword)) {
@@ -52,7 +59,7 @@ class BukuApi extends ResourceController
         $offset = ($page - 1) * $perPage;
         $data = $builder->limit($perPage, $offset)->findAll();
 
-        return $this->respond([
+        $responsePayload = [
             'status'  => 200,
             'message' => 'Data buku berhasil diambil.',
             'data'    => $data,
@@ -62,7 +69,11 @@ class BukuApi extends ResourceController
                 'total'       => $total,
                 'total_pages' => $totalPages,
             ],
-        ]);
+        ];
+
+        cache()->save($cacheKey, $responsePayload, 300); // 5 menit
+
+        return $this->respond($responsePayload);
     }
 
     /**
@@ -71,6 +82,13 @@ class BukuApi extends ResourceController
      */
     public function show($isbn = null)
     {
+        $cacheKey = 'api_book_show_' . $isbn;
+        $cached   = cache($cacheKey);
+
+        if ($cached !== null) {
+            return $this->respond($cached);
+        }
+
         $buku = $this->bukuModel->find($isbn);
 
         if (!$buku) {
@@ -82,11 +100,15 @@ class BukuApi extends ResourceController
 
         $buku['eksemplar'] = $eksemplar;
 
-        return $this->respond([
+        $responsePayload = [
             'status'  => 200,
             'message' => 'Detail buku berhasil diambil.',
             'data'    => $buku,
-        ]);
+        ];
+
+        cache()->save($cacheKey, $responsePayload, 300); // 5 menit
+
+        return $this->respond($responsePayload);
     }
 
     /**
@@ -99,10 +121,17 @@ class BukuApi extends ResourceController
             return $this->failValidationErrors('ID (ISBN atau Kode Eksemplar) wajib disertakan.');
         }
 
+        $cacheKey = 'api_availability_' . $id;
+        $cached   = cache($cacheKey);
+
+        if ($cached !== null) {
+            return $this->respond($cached);
+        }
+
         // 1. Coba cari sebagai kode_eksemplar
         $eksemplar = $this->eksemplarModel->find($id);
         if ($eksemplar) {
-            return $this->respond([
+            $responsePayload = [
                 'status'  => 200,
                 'message' => 'Data ketersediaan eksemplar berhasil diambil.',
                 'data'    => [
@@ -113,7 +142,11 @@ class BukuApi extends ResourceController
                     'ketersediaan' => $eksemplar['ketersediaan'],
                     'lokasi_rak'   => $eksemplar['lokasi_rak']
                 ]
-            ]);
+            ];
+
+            cache()->save($cacheKey, $responsePayload, 60); // 1 menit
+
+            return $this->respond($responsePayload);
         }
 
         // 2. Jika tidak ketemu, coba cari sebagai ISBN
@@ -122,7 +155,7 @@ class BukuApi extends ResourceController
             $tersedia = $this->eksemplarModel->where('isbn', $id)->where('ketersediaan', 'Tersedia')->countAllResults();
             $total    = $this->eksemplarModel->where('isbn', $id)->countAllResults();
             
-            return $this->respond([
+            $responsePayload = [
                 'status'  => 200,
                 'message' => 'Data ketersediaan buku berhasil diambil.',
                 'data'    => [
@@ -133,7 +166,11 @@ class BukuApi extends ResourceController
                     'eksemplar_tersedia'=> $tersedia,
                     'status'            => $tersedia > 0 ? 'Tersedia' : 'Habis'
                 ]
-            ]);
+            ];
+
+            cache()->save($cacheKey, $responsePayload, 60); // 1 menit
+
+            return $this->respond($responsePayload);
         }
 
         return $this->failNotFound('Data dengan ID/ISBN "' . $id . '" tidak ditemukan.');

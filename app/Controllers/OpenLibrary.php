@@ -102,6 +102,16 @@ class OpenLibrary extends BaseController
         }
 
         $isbn = trim((string)$isbn);
+
+        // Cek apakah data sudah ada di cache
+        $cacheKey = 'openlibrary_isbn_' . $isbn;
+        $cached   = cache($cacheKey);
+
+        if ($cached !== null) {
+            // Tambahkan flag fromCache opsional jika diperlukan client
+            $cached['fromCache'] = true;
+            return $this->response->setJSON($cached);
+        }
         
         try {
             $client = \Config\Services::curlrequest();
@@ -129,6 +139,9 @@ class OpenLibrary extends BaseController
                         'cover_url'    => $bookData['cover']['large'] ?? $bookData['cover']['medium'] ?? $bookData['cover']['small'] ?? null,
                     ];
                     
+                    // Simpan ke cache selama 1 minggu (604800 detik)
+                    cache()->save($cacheKey, $result, 604800);
+
                     return $this->response->setJSON($result);
                 } else {
                     return $this->response->setJSON([
