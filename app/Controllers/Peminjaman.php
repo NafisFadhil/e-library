@@ -276,6 +276,19 @@ class Peminjaman extends BaseController
                         'status_pembayaran' => 'Menunggu',
                         'catatan_admin'     => 'Denda keterlambatan sistem. Silakan pilih metode pembayaran Tripay atau hubungi admin.',
                     ]);
+                    
+                    // SEND EMAIL DENDA TERBENTUK (OTOMATIS)
+                    $anggota = $this->anggotaModel->find($peminjaman['id_anggota']);
+                    if ($anggota && !empty($anggota['email'])) {
+                        $notifService = new \App\Libraries\NotificationService();
+                        $notifService->sendNotification(
+                            $anggota['id_anggota'],
+                            $anggota['email'],
+                            'Denda Terbentuk',
+                            'Tagihan Denda Keterlambatan - E-Library',
+                            'Halo ' . $anggota['nama'] . ', terdapat tagihan denda keterlambatan sebesar Rp ' . number_format($totalDenda, 0, ',', '.') . ' untuk peminjaman #' . $id . '. Silakan segera lakukan pembayaran melalui sistem atau hubungi admin.'
+                        );
+                    }
                 }
             }
         }
@@ -292,6 +305,19 @@ class Peminjaman extends BaseController
         if ($newStatus === 'Dipinjam' && empty($peminjaman['tanggal_pinjam'])) {
             $updateData['tanggal_pinjam']      = date('Y-m-d H:i:s');
             $updateData['tanggal_jatuh_tempo'] = date('Y-m-d H:i:s', strtotime('+7 days'));
+            
+            // SEND EMAIL PEMINJAMAN DISETUJUI
+            $anggota = $this->anggotaModel->find($peminjaman['id_anggota']);
+            if ($anggota && !empty($anggota['email'])) {
+                $notifService = new \App\Libraries\NotificationService();
+                $notifService->sendNotification(
+                    $anggota['id_anggota'],
+                    $anggota['email'],
+                    'Peminjaman Disetujui',
+                    'Peminjaman Buku Disetujui - E-Library',
+                    'Halo ' . $anggota['nama'] . ', peminjaman buku Anda (ID: #' . $id . ') telah disetujui. Silakan ambil buku di perpustakaan. Tanggal jatuh tempo pengembalian adalah: ' . date('d M Y', strtotime($updateData['tanggal_jatuh_tempo']))
+                );
+            }
         }
 
         if (empty($peminjaman['id_pustakawan'])) {
@@ -382,6 +408,19 @@ class Peminjaman extends BaseController
             'status_pembayaran' => 'Menunggu',
             'catatan_admin'     => $this->request->getPost('catatan_admin'),
         ]);
+
+        // SEND EMAIL DENDA TERBENTUK (MANUAL)
+        $anggota = $this->anggotaModel->find($peminjaman['id_anggota']);
+        if ($anggota && !empty($anggota['email'])) {
+            $notifService = new \App\Libraries\NotificationService();
+            $notifService->sendNotification(
+                $anggota['id_anggota'],
+                $anggota['email'],
+                'Denda Terbentuk',
+                'Tagihan Denda Keterlambatan - E-Library',
+                'Halo ' . $anggota['nama'] . ', terdapat tagihan denda keterlambatan sebesar Rp ' . number_format($totalDenda, 0, ',', '.') . ' untuk peminjaman #' . $id . ' yang baru saja diterbitkan. Silakan segera lakukan pembayaran melalui sistem atau hubungi admin.'
+            );
+        }
 
         session()->setFlashdata('success', 'Tagihan denda berhasil diterbitkan.');
         return redirect()->to('dashboard/peminjaman/show/' . $id);
