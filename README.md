@@ -1,69 +1,116 @@
-# CodeIgniter 4 Application Starter
+# E-Library (Aplikasi Manajemen Perpustakaan)
 
-## What is CodeIgniter?
+Proyek ini adalah aplikasi E-Library berbasis website yang dibangun menggunakan framework CodeIgniter 4. Aplikasi ini memfasilitasi proses peminjaman buku, manajemen anggota, manajemen pustakawan, serta pengelolaan denda.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+## 🛠️ Tech Stack
+- **Backend Framework:** CodeIgniter 4 (PHP)
+- **Database:** MySQL
+- **Frontend:** HTML, CSS, JavaScript (termasuk library eksternal jika ada, misal: Bootstrap / Tailwind / NiceAdmin)
+- **Package Manager:** Composer
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## 📋 Keperluan Instalasi (Prerequisites)
+Pastikan sistem Anda sudah memiliki spesifikasi berikut sebelum menjalankan aplikasi:
+1. **PHP** versi 8.1 atau lebih baru. Disarankan PHP 8.2+. (Pastikan ekstensi `intl`, `mbstring`, `json`, `mysqlnd`, `curl` aktif).
+2. **Composer** versi terbaru.
+3. **MySQL Server** (XAMPP, Laragon, MySQL Workbench, dll).
+4. **Git** (opsional, untuk proses clone).
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+## 🚀 Cara Instalasi
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+1. **Clone Repository**
+   Silakan clone repository ini ke dalam direktori lokal Anda (misal `htdocs` untuk XAMPP).
+   ```bash
+   git clone https://github.com/NafisFadhil/e-library.git
+   cd e-library
+   ```
 
-## Installation & updates
+2. **Install Dependensi Composer**
+   Jalankan perintah berikut di terminal pada direktori proyek untuk menginstal package yang dibutuhkan oleh CodeIgniter 4:
+   ```bash
+   composer install
+   ```
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+3. **Konfigurasi Lingkungan (.env)**
+   * Salin file `.env.example` dan ubah namanya menjadi `.env`.
+   * Buka file `.env` menggunakan text editor, lalu atur variabel database sesuai dengan sistem lokal Anda.
+   * Pastikan `CI_ENVIRONMENT` diatur ke `development` saat proses development.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+   **Contoh Konfigurasi .env:**
+   ```env
+   CI_ENVIRONMENT = development
+   app.baseURL = 'http://localhost:8080/'
+   
+   database.default.hostname = localhost
+   database.default.database = elibrary
+   database.default.username = root
+   database.default.password = 
+   database.default.DBDriver = MySQLi
+   ```
 
-## Setup
+4. **Buat Database**
+   Buat database baru di MySQL dengan nama `elibrary` (sesuai konfigurasi `.env`).
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+5. **Jalankan Migrasi & Seeder**
+   Proyek ini sudah dilengkapi dengan struktur database (migration) dan data dummy (seeder). Anda wajib menjalankan perintah ini untuk membangun tabel dan mengisi data awal:
+   ```bash
+   php spark db:seed DatabaseSeeder
+   php spark migrate --seed DatabaseSeeder
+   ```
+   > **Note:** Perintah ini akan menjalankan `DatabaseSeeder` yang secara otomatis mengisi data Buku, Anggota, Pustakawan, Eksemplar, Peminjaman, dll.
 
-## Important Change with index.php
+6. **Jalankan Aplikasi**
+   Setelah semua selesai, jalankan *development server* bawaan CodeIgniter:
+   ```bash
+   php spark serve
+   ```
+   Buka browser dan akses URL: `http://localhost:8080`
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+---
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+## 👥 Akun Demo
 
-**Please** read the user guide for a better explanation of how CI4 works!
+Setelah menjalankan seeder, Anda dapat login menggunakan akun-akun demo berikut:
 
-## Repository Management
+| Peran | Username / Email | Password | Keterangan |
+| :--- | :--- | :--- | :--- |
+| **Admin Pustakawan** | `admin` / `admin@elib.com` | `admin123` | Akses penuh (Manajemen Pustakawan, dll) |
+| **Pustakawan** | `pustakawan` / `pustakawan@elib.com` | `pustakawan123` | Akses manajemen buku & transaksi |
+| **Anggota** | `hastuti.hesti@yahoo.com` | `password123` | Akses frontend (Peminjaman buku, profil) |
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+> **Tips:** Untuk mengetahui email anggota dummy, silakan cek tabel `anggota` di database Anda setelah seeder berhasil dijalankan.
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+---
 
-## Server Requirements
+## 🖼️ Screenshot Fitur Utama
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+*(Silakan ganti URL gambar di bawah ini dengan link screenshot yang sebenarnya sebelum pengumpulan)*
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+### 1. Dashboard Pustakawan
+![Dashboard Admin/Pustakawan](placeholder-dashboard.png)
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+### 2. Manajemen Buku & Eksemplar
+![Manajemen Buku](placeholder-buku.png)
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+### 3. Proses Peminjaman Buku
+![Transaksi Peminjaman](placeholder-peminjaman.png)
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### 4. Portal Anggota (Pengajuan Pinjam & Denda)
+![Portal Anggota](placeholder-anggota.png)
+
+---
+
+## 📐 Skema Database & Normalisasi
+
+Untuk melihat rancangan database perpustakaan dan tahapan normalisasinya, silakan klik tautan di bawah ini:
+*   **[Entity Relationship Diagram (ERD)](docs/ERD%20SBD%20Perpustakaan.png)**
+*   **Dokumen Normalisasi Database:**
+    *   [First Normal Form (1NF)](docs/1NF.png)
+    *   [Second Normal Form (2NF)](docs/2NF.png)
+    *   [Third Normal Form (3NF)](docs/3NF.png)
+
+---
+
+## 📄 Dokumentasi API
+
+Aplikasi ini juga menyediakan endpoint RESTful API yang terdokumentasi lengkap:
+*   **[Dokumentasi Web Service API](docs/API_DOCUMENTATION.md)**
