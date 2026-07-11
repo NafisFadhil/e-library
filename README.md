@@ -24,13 +24,19 @@ Pastikan sistem Anda sudah memiliki spesifikasi berikut sebelum menjalankan apli
    cd e-library
    ```
 
-2. **Install Dependensi Composer**
+2. **Salin Folder Vendor NiceAdmin**
+   Setelah melakukan clone, Anda perlu menyalin folder `vendor` yang terdapat di dalam `NiceAdmin/assets` ke direktori `public/assets`.
+   ```bash
+   cp -r NiceAdmin/assets/vendor public/assets/
+   ```
+
+3. **Install Dependensi Composer**
    Jalankan perintah berikut di terminal pada direktori proyek untuk menginstal package yang dibutuhkan oleh CodeIgniter 4:
    ```bash
    composer install
    ```
 
-3. **Konfigurasi Lingkungan (.env)**
+4. **Konfigurasi Lingkungan (.env)**
    * Salin file `.env.example` dan ubah namanya menjadi `.env`.
    * Buka file `.env` menggunakan text editor, lalu atur variabel database sesuai dengan sistem lokal Anda.
    * Pastikan `CI_ENVIRONMENT` diatur ke `development` saat proses development.
@@ -47,10 +53,10 @@ Pastikan sistem Anda sudah memiliki spesifikasi berikut sebelum menjalankan apli
    database.default.DBDriver = MySQLi
    ```
 
-4. **Buat Database**
+5. **Buat Database**
    Buat database baru di MySQL dengan nama `elibrary` (sesuai konfigurasi `.env`).
 
-5. **Jalankan Migrasi & Seeder**
+6. **Jalankan Migrasi & Seeder**
    Proyek ini sudah dilengkapi dengan struktur database (migration) dan data dummy (seeder). Anda wajib menjalankan perintah ini untuk membangun tabel dan mengisi data awal:
    ```bash
    php spark db:seed DatabaseSeeder
@@ -58,7 +64,7 @@ Pastikan sistem Anda sudah memiliki spesifikasi berikut sebelum menjalankan apli
    ```
    > **Note:** Perintah ini akan menjalankan `DatabaseSeeder` yang secara otomatis mengisi data Buku, Anggota, Pustakawan, Eksemplar, Peminjaman, dll.
 
-6. **Jalankan Aplikasi**
+7. **Jalankan Aplikasi**
    Setelah semua selesai, jalankan *development server* bawaan CodeIgniter:
    ```bash
    php spark serve
