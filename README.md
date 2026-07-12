@@ -51,6 +51,19 @@ Pastikan sistem Anda sudah memiliki spesifikasi berikut sebelum menjalankan apli
    database.default.username = root
    database.default.password = 
    database.default.DBDriver = MySQLi
+
+   TRIPAY_API_KEY=your_tripay_api_key
+   TRIPAY_PRIVATE_KEY=your_tripay_private_key
+   TRIPAY_MERCHANT_CODE=your_tripay_merchant_code
+
+   #--------------------------------------------------------------------
+   # EMAIL (SMTP)
+   #--------------------------------------------------------------------
+   SMTP_HOST=your_smtp_host
+   SMTP_USER=your_smtp_user
+   SMTP_PASS=your_smtp_password
+   SMTP_PORT=465
+   SMTP_CRYPTO=ssl
    ```
 
 5. **Buat Database**
